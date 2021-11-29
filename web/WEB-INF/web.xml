@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+
+    <!--DispatcherServlet-->
+    <servlet>
+        <servlet-name>DispatcherServlet</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <!--一定要注意:我们这里加载的是总的配置文件，之前被这里坑了！-->
+            <param-value>classpath:applicationContext.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DispatcherServlet</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+    <!--encodingFilter-->
+
+    <!--Session过期时间-->
+    <session-config>
+        <session-timeout>15</session-timeout>
+    </session-config>
+    <welcome-file-list>
+        <welcome-file>Login.jsp</welcome-file>
+    </welcome-file-list>
+    <!-- 中文乱码过滤器 -->
+    <filter>
+        <filter-name>CharacterFilter</filter-name><!--过滤器名称-->
+        <filter-class>com.djk.filter.CharacterFilter</filter-class><!--过滤器的完整类名-->
+
+        <init-param>
+            <param-name>encoding</param-name><!--参数名称-->
+            <param-value>UTF-8</param-value><!--参数值-->
+        </init-param>
+    </filter>
+    <filter-mapping><!--过滤器映射-->
+        <filter-name>CharacterFilter</filter-name><!--过滤器名称-->
+        <url-pattern>/*</url-pattern><!--URL映射，给所有页面处理乱码-->
+    </filter-mapping>
+</web-app>

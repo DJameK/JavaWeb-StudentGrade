@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.djk.dao.UserMapper">
+
+<!--    课程CURD-->
+    <insert id="addCourse" parameterType="Course">
+        insert into course (course_id, course_name, credit, course_hour)
+        values (#{course_id},#{course_name},#{credit},#{course_hour});
+    </insert>
+
+    <delete id="deleteCourseById" parameterType="String">
+        delete from course where course_id = #{id}
+    </delete>
+
+    <update id="updateCourse" parameterType="Course" >
+        update course
+        set course_name = #{course_name}, credit= #{credit}, course_hour= #{course_hour}
+        where course_id=#{course_id}
+    </update>
+
+    <select id="queryCourseById" parameterType="String" resultType="Course">
+        select *
+        from course
+        where course_id=#{courseId}
+    </select>
+
+    <select id="queryAllCourse" resultType="Course">
+        select *
+        from course
+    </select>
+
+    <!-- 学生CURD-->
+    <select id="queryStudentById" parameterType="String" resultType="Student">
+        select *
+        from student
+        where stu_id = #{stuId}
+    </select>
+
+    <insert id="addStudent" parameterType="Student">
+        insert into student (stu_id, stu_name, stu_gender, class_name, stu_pwd, telephone)
+        values (#{stu_id}, #{stu_name}, #{stu_gender}, #{class_name}, #{stu_pwd}, #{telephone});
+    </insert>
+
+    <delete id="deleteStudentById" parameterType="String">
+        delete from student
+        where stu_id=#{stuId}
+    </delete>
+
+    <update id="updateStudent" parameterType="Student">
+        update student
+        set stu_name=#{stu_name}, stu_gender=#{stu_gender}, class_name=#{class_name}, stu_pwd=#{stu_pwd}, telephone=#{telephone}
+        where stu_id = #{stu_id}
+    </update>
+
+    <select id="queryAllStudent" resultType="Student">
+        select *
+        from student_grade.student
+        order by class_name
+    </select>
+
+
+    <!-- 教师CURD-->
+
+    <select id="queryTeacherById" parameterType="String" resultType="Teacher">
+        select *
+        from teacher
+        where t_id=#{tId}
+    </select>
+
+    <insert id="addTeacher" parameterType="Teacher">
+        insert into teacher (t_id, t_name, t_gender, telephone)
+        values (#{t_id}, #{t_name}, #{t_gender}, #{telephone});
+    </insert>
+
+    <delete id="deleteTeacherById" parameterType="String">
+        delete from teacher
+        where t_id=#{tId}
+    </delete>
+
+    <update id="updateTeacher" parameterType="Teacher">
+        update teacher
+        set t_name=#{t_name}, t_gender=#{t_gender}, telephone=#{telephone}
+        where t_id=#{t_id}
+    </update>
+
+    <select id="queryAllTeacher" resultType="Teacher">
+        select *
+        from teacher
+    </select>
+
+
+    <!-- 管理员CURD-->
+    <select id="queryAdminById" parameterType="String" resultType="Admin">
+        select *
+        from admin
+        where admin_id=#{adminId}
+    </select>
+
+    <insert id="addAdmin" parameterType="Admin">
+        insert into admin (admin_id, admin_name, admin_pwd)
+        values (#{admin_id}, #{admin_name}, #{admin_pwd});
+    </insert>
+
+    <delete id="deleteAdminById" parameterType="String">
+        delete from admin
+        where admin_id=#{adminId}
+    </delete>
+
+    <update id="updateAdmin" parameterType="Admin">
+        update admin
+        set admin_name=#{admin_name}, admin_pwd=#{admin_pwd}
+        where admin_id=#{admin_id}
+    </update>
+
+    <select id="queryAllAdmin" resultType="Admin">
+        select * from admin
+    </select>
+
+
+    <!-- 联student,teacher表查询-->
+    <resultMap id="stuGradeInfo" type="com.djk.resultmap.GradeOfStudent">
+        <result property="stu_id" column="stu_id"/>
+        <result property="stu_name" column="stu_name"/>
+        <result property="course_name" column="course_name"/>
+        <result property="grade" column="stu_grade"/>
+<!--        <association property="student" javaType="Student">-->
+<!--            <id property="stu_id" column="stu_id"/>-->
+<!--            <result column="stu_id" property="stu_id"/>-->
+<!--            <result column="student_name" property="student_name"/>-->
+<!--        </association>-->
+<!--        <association property="course" javaType="Course">-->
+<!--            <id property="course_id" column="course_id"/>-->
+<!--            <result column="course_name" property="course_name"/>-->
+<!--        </association>-->
+    </resultMap>
+        <!--成绩CURD-->
+    <select id="queryGradeById" resultMap="stuGradeInfo" parameterType="String">
+        select student.stu_id,student.stu_name,course.course_name,stu_grade
+        from grade,student,course
+        where grade.stu_id=#{sid}
+        and grade.stu_id=student.stu_id
+        and grade.course_id = course.course_id
+    </select>
+
+    <select id="queryGradeByIds" parameterType="String">
+        select *
+        from grade
+        where stu_id=#{stuId} and course_id=#{courseId}
+    </select>
+
+    <insert id="addGrade" parameterType="Grade">
+        insert into grade (stu_id, course_id, stu_grade)
+        values (#{stu_id}, #{course_id}, #{stu_grade});
+    </insert>
+
+    <delete id="deleteGradeById" parameterType="String">
+        delete from grade
+        where stu_id =#{stuId}
+    </delete>
+
+    <update id="updateGrade" parameterType="Grade">
+        update grade
+        set stu_grade = #{stu_grade}
+        where stu_id = #{stu_id} and  course_id =#{course_id}
+    </update>
+
+    <select id="queryAllGrade" resultMap="stuGradeInfo" >
+        select student.stu_id,student.stu_name,course.course_name,stu_grade
+        from grade,student,course
+        where grade.stu_id=student.stu_id
+        and grade.course_id = course.course_id
+    </select>
+
+    <!--验证密码-->
+    <select id="verifyCodeOfStudent" resultType="String">
+        select stu_pwd
+        from student
+        where stu_id=#{id}
+    </select>
+
+    <select id="verifyCodeOfTeacher" resultType="String">
+        select t_pwd
+        from teacher
+        where t_id=#{id}
+    </select>
+
+    <select id="verifyCodeOfAdmin" resultType="String">
+        select admin_pwd
+        from admin
+        where admin_id=#{id}
+    </select>
+
+<!--    按教师编号查课程-->
+    <select id="queryCourseByTId" resultType="Course">
+        select course.course_id,course.course_name, course.credit, course_hour
+        from course,teach
+        where teach.t_id=#{tId}
+        and teach.course_id=course.course_id
+    </select>
+
+    <!--老师查成绩-->
+
+    <select id="queryGradeForTeacher" resultType="GradeForTeacher">
+        select class_name,student.stu_id,stu_name,course_name,stu_grade
+        from grade,student,course
+        where grade.course_id =course.course_id
+        and grade.stu_id = student.stu_id
+        and course.course_id =#{cid}
+        order by class_name
+    </select>
+
+    <select id="queryStudentOfCourse" resultType="Student">
+        select student.stu_id, student.stu_name, student.stu_gender, student.class_name, telephone
+        from student,grade
+        where grade.stu_id=student.stu_id
+        and course_id =#{cid}
+        order by class_name and student.stu_id
+    </select>
+
+    <select id="queryCourseBySId" resultType="Course">
+        select course.course_id, course_name, credit, course_hour
+        from course,grade
+        where course.course_id = grade.course_id
+        and stu_id=#{sid}
+    </select>
+</mapper>
